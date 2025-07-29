@@ -15,6 +15,10 @@ func Run(h *Handler) {
 	// Users
 	mux.HandleFunc("/users", h.getAllUsers)
 
+	// Broker
+	mux.HandleFunc("/events", h.handleBrokerPublish)
+	mux.HandleFunc("/subscribe", h.handleBrokerSubscribe)
+
 	// Cron jobs
 	mux.HandleFunc("/crons/delete-tokens", h.handleCronDeleteTokens)
 	// Health checks

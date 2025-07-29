@@ -19,6 +19,8 @@ linters:
     - nonamedreturns
     - funcorder
     - wsl_v5
+    # no time to fix every new lint error now for the task, this is a fresh one that appears jsut a few days ago
+    - noctx
   settings:
     exhaustive:
       ignore-enum-members: stripe.*

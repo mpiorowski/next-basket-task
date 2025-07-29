@@ -37,6 +37,7 @@ type Config struct {
 	CoreURL   string
 	AdminURL  string
 	ClientURL string
+	NatsURL   string
 	CronToken string
 
 	// Constants
@@ -63,53 +64,55 @@ func LoadConfig() *Config {
 		MaxFileSize     = 10 << 20
 	)
 	return &Config{
-		LogLevel:              MustSetEnv(true, "LOG_LEVEL"),
-		HTTPPort:              MustSetEnv(true, "HTTP_PORT"),
-		GRPCPort:              MustSetEnv(true, "GRPC_PORT"),
-		Domain:                MustSetEnv(true, "DOMAIN"),
-		CoreURL:               MustSetEnv(true, "CORE_URL"),
-		AdminURL:              MustSetEnv(true, "ADMIN_URL"),
-		ClientURL:             MustSetEnv(true, "CLIENT_URL"),
-		CronToken:             MustSetEnv(true, "CRON_TOKEN"),
-		HTTPTimeout:           HTTPTimeout,
-		ContextTimeout:        ContextTimeout,
-		AccessTokenExp:        AccessTokenExp,
-		RefreshTokenExp:       RefreshTokenExp,
-		MaxFileSize:           MaxFileSize,
-		PostgresHost:          MustSetEnv(true, "POSTGRES_HOST"),
-		PostgresPort:          MustSetEnv(true, "POSTGRES_PORT"),
-		PostgresDB:            MustSetEnv(true, "POSTGRES_DB"),
-		PostgresUser:          MustSetEnv(true, "POSTGRES_USER"),
-		PostgresPassword:      MustSetEnv(true, "POSTGRES_PASSWORD"),
+		LogLevel:         MustSetEnv(true, "LOG_LEVEL"),
+		HTTPPort:         MustSetEnv(true, "HTTP_PORT"),
+		GRPCPort:         MustSetEnv(true, "GRPC_PORT"),
+		Domain:           MustSetEnv(true, "DOMAIN"),
+		CoreURL:          MustSetEnv(true, "CORE_URL"),
+		AdminURL:         MustSetEnv(true, "ADMIN_URL"),
+		ClientURL:        MustSetEnv(true, "CLIENT_URL"),
+		NatsURL:          MustSetEnv(true, "NATS_URL"),
+		CronToken:        MustSetEnv(true, "CRON_TOKEN"),
+		HTTPTimeout:      HTTPTimeout,
+		ContextTimeout:   ContextTimeout,
+		AccessTokenExp:   AccessTokenExp,
+		RefreshTokenExp:  RefreshTokenExp,
+		MaxFileSize:      MaxFileSize,
+		PostgresHost:     MustSetEnv(true, "POSTGRES_HOST"),
+		PostgresPort:     MustSetEnv(true, "POSTGRES_PORT"),
+		PostgresDB:       MustSetEnv(true, "POSTGRES_DB"),
+		PostgresUser:     MustSetEnv(true, "POSTGRES_USER"),
+		PostgresPassword: MustSetEnv(true, "POSTGRES_PASSWORD"),
 	}
 }
 
 func LoadTestConfig() *Config {
 	const (
-		HTTPTimeout                = 10 * time.Second
-		ContextTimeout             = 10 * time.Second
-		AccessTokenExp             = 5 * time.Minute
-		RefreshTokenExp            = 30 * 24 * time.Hour
-		MaxFileSize                = 10 << 20
+		HTTPTimeout     = 10 * time.Second
+		ContextTimeout  = 10 * time.Second
+		AccessTokenExp  = 5 * time.Minute
+		RefreshTokenExp = 30 * 24 * time.Hour
+		MaxFileSize     = 10 << 20
 	)
 	return &Config{
-		LogLevel:              "debug",
-		HTTPPort:              "8080",
-		GRPCPort:              "50051",
-		Domain:                "localhost",
-		CoreURL:               "http://localhost:8080",
-		AdminURL:              "http://localhost:8080",
-		ClientURL:             "http://localhost:3000",
-		CronToken:             "test",
-		HTTPTimeout:           HTTPTimeout,
-		ContextTimeout:        ContextTimeout,
-		AccessTokenExp:        AccessTokenExp,
-		RefreshTokenExp:       RefreshTokenExp,
-		MaxFileSize:           MaxFileSize,
-		PostgresHost:          "localhost",
-		PostgresPort:          "5432",
-		PostgresDB:            "test",
-		PostgresUser:          "test",
-		PostgresPassword:      "test",
+		LogLevel:         "debug",
+		HTTPPort:         "8080",
+		GRPCPort:         "50051",
+		Domain:           "localhost",
+		CoreURL:          "http://localhost:8080",
+		AdminURL:         "http://localhost:8080",
+		ClientURL:        "http://localhost:3000",
+		NatsURL:          "nats://localhost:4222",
+		CronToken:        "test",
+		HTTPTimeout:      HTTPTimeout,
+		ContextTimeout:   ContextTimeout,
+		AccessTokenExp:   AccessTokenExp,
+		RefreshTokenExp:  RefreshTokenExp,
+		MaxFileSize:      MaxFileSize,
+		PostgresHost:     "localhost",
+		PostgresPort:     "5432",
+		PostgresDB:       "test",
+		PostgresUser:     "test",
+		PostgresPassword: "test",
 	}
 }

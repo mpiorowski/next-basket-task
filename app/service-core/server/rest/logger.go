@@ -15,6 +15,10 @@ func loggingMiddleware(next http.Handler) http.Handler {
 			authTokenPresent = true
 		}
 
+		slog.Info("HTTP call start",
+			slog.String("http_method", r.Method),
+			slog.String("http_path", r.URL.Path),
+		)
 		next.ServeHTTP(w, r)
 		duration := time.Since(startTime)
 
@@ -22,7 +26,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		slog.Info("HTTP call",
+		slog.Info("HTTP call end",
 			slog.String("http_method", r.Method),
 			slog.String("http_path", r.URL.Path),
 			slog.String("duration", duration.String()),

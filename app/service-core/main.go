@@ -4,6 +4,7 @@ import (
 	"app/pkg"
 	"context"
 	"log/slog"
+	"service-core/broker"
 	"service-core/config"
 	"service-core/server"
 	"service-core/storage"
@@ -31,8 +32,17 @@ func main() {
 	}
 	slog.Info("Database connected")
 
+	// Initialize the broker
+	b, err := broker.New(cfg.NatsURL)
+	if err != nil {
+		slog.Error("Error initializing broker", "error", err)
+		panic(err)
+	}
+	// Run the broker
+	b.Run(context.Background())
+
 	// Set up the servers
-	srv := server.New(cfg, s)
+	srv := server.New(cfg, s, b)
 
 	// Run the servers
 	srv.Start()

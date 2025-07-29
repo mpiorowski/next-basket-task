@@ -1,5 +1,18 @@
 services:
 
+  client:
+    container_name: gofast-client
+    build:
+      context: ./app/service-client
+      dockerfile: Dockerfile
+    volumes:
+      - ./app/service-client/src:/app/src
+      - ./app/service-client/.svelte-kit:/app/.svelte-kit
+    ports:
+      - 3000:3000
+    depends_on:
+      - core
+
   core:
     container_name: gofast-core
     build:
@@ -20,6 +33,7 @@ services:
       CORE_URL: http://localhost:4001
       ADMIN_URL: http://localhost:3001
       CLIENT_URL: http://localhost:3000
+      NATS_URL: nats://gofast-nats:4222
       #
       # Database
       POSTGRES_HOST: ${POSTGRES_HOST}
@@ -28,6 +42,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     env_file: .env
+    depends_on:
+      - postgres
+      - nats
 
   postgres:
     container_name: gofast-postgres
@@ -38,3 +55,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+
+  nats:
+    container_name: gofast-nats
+    image: nats:latest
+    ports:
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+    environment:
+      - NATS_USER=admin
+      - NATS_PASSWORD=admink
