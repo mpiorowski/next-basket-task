@@ -1,0 +1,40 @@
+services:
+
+  core:
+    container_name: gofast-core
+    build:
+      context: ./app
+      dockerfile: ./service-core/Dockerfile
+      target: dev
+    volumes:
+      - ./app/service-core:/app/service-core
+    ports:
+      - 4001:4001
+      - 4002:4002
+    environment:
+      LOG_LEVEL: debug
+      HTTP_PORT: 4001
+      GRPC_PORT: 4002
+      DOMAIN: localhost
+      CRON_TOKEN: 1234
+      CORE_URL: http://localhost:4001
+      ADMIN_URL: http://localhost:3001
+      CLIENT_URL: http://localhost:3000
+      #
+      # Database
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file: .env
+
+  postgres:
+    container_name: gofast-postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
