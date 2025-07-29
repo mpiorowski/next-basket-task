@@ -2,6 +2,7 @@ package server
 
 import (
 	"app/pkg/auth"
+	"app/pkg/event"
 	"service-core/broker"
 	"service-core/config"
 	"service-core/domain/user"
@@ -20,7 +21,7 @@ type Server struct {
 	UserService *user.Service
 }
 
-func New(cfg *config.Config, s *storage.Storage, b *broker.Broker) *Server {
+func New(cfg *config.Config, s *storage.Storage, b *broker.Broker, eventStore *event.Store) *Server {
 	store := query.New(s.Conn)
 	authService := auth.NewService()
 	userService := user.NewService(cfg, store)
@@ -29,7 +30,7 @@ func New(cfg *config.Config, s *storage.Storage, b *broker.Broker) *Server {
 		Config:      cfg,
 		Storage:     s,
 		GRPCServer:  grpc.NewHandler(cfg, authService, userService),
-		RESTServer:  rest.NewHandler(cfg, store, authService, userService, b),
+		RESTServer:  rest.NewHandler(cfg, store, authService, userService, b, eventStore),
 		AuthService: authService,
 		UserService: userService,
 	}

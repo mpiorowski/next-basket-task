@@ -2,6 +2,7 @@ package rest
 
 import (
 	"app/pkg/auth"
+	"app/pkg/event"
 	"service-core/broker"
 	"service-core/config"
 	"service-core/domain/user"
@@ -14,6 +15,7 @@ type Handler struct {
 	authService *auth.Service
 	userService *user.Service
 	broker      *broker.Broker
+	eventStore  *event.Store
 }
 
 func NewHandler(
@@ -22,6 +24,7 @@ func NewHandler(
 	authService *auth.Service,
 	userService *user.Service,
 	broker *broker.Broker,
+	eventStore *event.Store,
 ) *Handler {
 	return &Handler{
 		cfg:         config,
@@ -29,5 +32,6 @@ func NewHandler(
 		authService: authService,
 		userService: userService,
 		broker:      broker,
+		eventStore:  eventStore,
 	}
 }

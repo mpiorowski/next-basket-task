@@ -17,6 +17,7 @@ func Run(h *Handler) {
 
 	// Broker
 	mux.HandleFunc("/events", h.handleBrokerPublish)
+	mux.HandleFunc("/events/all", h.handleGetAllEvents)
 	mux.HandleFunc("/subscribe", h.handleBrokerSubscribe)
 
 	// Cron jobs

@@ -2,6 +2,7 @@ package main
 
 import (
 	"app/pkg"
+	"app/pkg/event"
 	"context"
 	"log/slog"
 	"service-core/broker"
@@ -41,8 +42,11 @@ func main() {
 	// Run the broker
 	b.Run(context.Background())
 
+	// Initialize the event store
+	eventStore := event.NewStore()
+
 	// Set up the servers
-	srv := server.New(cfg, s, b)
+	srv := server.New(cfg, s, b, eventStore)
 
 	// Run the servers
 	srv.Start()

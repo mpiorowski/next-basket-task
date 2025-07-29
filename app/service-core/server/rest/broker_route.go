@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"app/pkg/event"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -27,6 +28,11 @@ func (h *Handler) handleBrokerPublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.eventStore.Add(event.Event{
+		Subject: req.Subject,
+		Data:    req.Data,
+	})
+
 	err = h.broker.Publish(r.Context(), req.Subject, req.Data)
 	if err != nil {
 		http.Error(w, fmt.Errorf("failed to publish message: %w", err).Error(), http.StatusInternalServerError)
@@ -34,6 +40,17 @@ func (h *Handler) handleBrokerPublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeResponse(h.cfg, w, r, nil, nil)
+}
+
+func (h *Handler) handleGetAllEvents(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.URL.Query().Get("tenant_id")
+	if tenantID == "" {
+		events := h.eventStore.GetAll()
+		writeResponse(h.cfg, w, r, events, nil)
+		return
+	}
+	events := h.eventStore.GetByTenantID(tenantID)
+	writeResponse(h.cfg, w, r, events, nil)
 }
 
 func (h *Handler) handleBrokerSubscribe(w http.ResponseWriter, r *http.Request) {

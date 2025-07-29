@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { type PageProps } from './$types';
-    import { toast } from '@zerodevx/svelte-toast'
+	import { toast } from '@zerodevx/svelte-toast';
 
 	let { params }: PageProps = $props();
 
 	let notifications = $state<string[]>([]);
+	let eventHistory = $state<any[]>([]);
 	let socket: WebSocket | null = null;
 	let message = $state('User logged in');
 
 	async function sendMessage(event: Event) {
-        event.preventDefault();
+		event.preventDefault();
 		const payload = {
 			subject: `tenant.${params.tenant_id}`,
 			data: {
@@ -33,19 +34,34 @@
 			if (!response.ok) {
 				console.error('Failed to send message:', response.statusText);
 			}
-            toast.push(`Message sent: ${message}`, {
-                theme: {
-                    '--toastBackground': '#4caf50',
-                    '--toastColor': '#fff'
-                },
-                duration: 3000
-            });
+			toast.push(`Message sent: ${message}`, {
+				theme: {
+					'--toastBackground': '#4caf50',
+					'--toastColor': '#fff'
+				},
+				duration: 3000
+			});
 		} catch (error) {
 			console.error('Error sending message:', error);
 		}
 	}
 
+	async function fetchEventHistory() {
+		try {
+			const response = await fetch(`http://localhost:4001/events/all?tenant_id=${params.tenant_id}`);
+			if (response.ok) {
+				const data = await response.json();
+				eventHistory = data || [];
+			} else {
+				console.error('Failed to fetch event history:', response.statusText);
+			}
+		} catch (error) {
+			console.error('Error fetching event history:', error);
+		}
+	}
+
 	onMount(() => {
+		fetchEventHistory();
 		const subject = `tenant.${params.tenant_id}`;
 		const wsUrl = `ws://localhost:4001/subscribe?subject=${subject}`;
 		socket = new WebSocket(wsUrl);
@@ -58,15 +74,15 @@
 			try {
 				const data = JSON.parse(event.data);
 				notifications = [...notifications, JSON.stringify(data, null, 2)];
-                toast.push(`Notification received`, {
-                    theme: {
-                        '--toastBackground': '#2196f3',
-                        '--toastColor': '#fff'
-                    },
-                    duration: 3000
-                });
+				toast.push(`Notification received`, {
+					theme: {
+						'--toastBackground': '#2196f3',
+						'--toastColor': '#fff'
+					},
+					duration: 3000
+				});
 			} catch (e) {
-                console.error('Error parsing message:', e);
+				console.error('Error parsing message:', e);
 				notifications = [...notifications, event.data];
 			}
 		};
@@ -104,10 +120,21 @@
 
 	{#if notifications.length > 0}
 		<div class="mt-8">
-			<h2 class="text-2xl font-bold mb-4">Notifications</h2>
+			<h2 class="text-2xl font-bold mb-4">Live Notifications</h2>
 			<div class="mockup-code">
 				{#each notifications as notification, i (i)}
 					<pre data-prefix={i + 1}><code>{notification}</code></pre>
+				{/each}
+			</div>
+		</div>
+	{/if}
+
+	{#if eventHistory.length > 0}
+		<div class="mt-8">
+			<h2 class="text-2xl font-bold mb-4">Event History</h2>
+			<div class="mockup-code">
+				{#each eventHistory as event, i (i)}
+					<pre data-prefix={i + 1}><code>{JSON.stringify(event.data, null, 2)}</code></pre>
 				{/each}
 			</div>
 		</div>
